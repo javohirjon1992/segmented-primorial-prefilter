@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite the article below."
+title: "Segmented Primorial Prefilter: code and data"
+version: "1.0"
+license: MIT
+authors:
+  - family-names: Ergashev
+    given-names: Isroilbek
+  - family-names: Mamaraimov
+    given-names: Bekzod
+  - family-names: Boykuziev
+    given-names: Ilkhom
+  - family-names: Abdurakhimov
+    given-names: Bakhtiyor
+  - family-names: Abdurazzokov
+    given-names: Javokhir
+preferred-citation:
+  type: article
+  title: "Segmented Primorial Prefiltering and Cost-Optimal Sieving Bounds for Prime Generation"
+  authors:
+    - family-names: Ergashev
+      given-names: Isroilbek
+    - family-names: Mamaraimov
+      given-names: Bekzod
+    - family-names: Boykuziev
+      given-names: Ilkhom
+    - family-names: Abdurakhimov
+      given-names: Bakhtiyor
+    - family-names: Abdurazzokov
+      given-names: Javokhir

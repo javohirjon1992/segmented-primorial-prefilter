@@ -1,0 +1,15 @@
+bits,algorithm,n,mean_ms,se_ms
+1024,"GenPrime, t from Table II (DLP, 2^-128)",60,28.61,3.33
+1024,"GenPrime, t = 64",60,59.91,3.3
+1024,"GenProvablePrime, segmented prefilter (B = 1e5)",60,24.89,2.71
+1024,"GenProvablePrime, trial division (B = 1000)",60,27.28,3.31
+1536,"GenPrime, t from Table II (DLP, 2^-128)",40,91.62,11.89
+1536,"GenPrime, t = 64",40,192.47,11.92
+1536,"GenProvablePrime, segmented prefilter (B = 1e5)",40,120.61,15.57
+1536,"GenProvablePrime, trial division (B = 1000)",40,158.12,19.65
+2048,"GenPrime, t from Table II (DLP, 2^-128)",20,80.57,11.62
+2048,"GenPrime, t = 64",20,197.22,11.62
+2048,"GenProvablePrime, segmented prefilter (B = 1e5)",20,250.81,44.24
+2048,"GenProvablePrime, trial division (B = 1000)",20,301.59,63.49
+2048,GenRSAPrimes (t = 6),30,26.13,2.71
+3072,GenRSAPrimes (t = 4),10,126.22,22.42

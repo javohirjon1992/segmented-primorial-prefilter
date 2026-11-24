@@ -1,0 +1,27 @@
+# build outputs
+spp/build/
+experiments/cpp/*.o
+experiments/cpp/diss_bench
+experiments/cpp/ct_experiment
+experiments/cpp/ossl_bench
+experiments/cpp/ossl_seg
+experiments/cpp/safe_batch
+experiments/cpp/rsa_bench
+experiments/cpp/fullgen
+experiments/cpp/review_exp
+experiments/cpp/gcdcost
+*.exe
+# raw results and generated files
+experiments/cpp/results/
+experiments/cpp/results.tar.gz
+experiments/python/results*/
+experiments/python/results*.zip
+figures/out/
+__pycache__/
+.ipynb_checkpoints/
+experiments/cpp/ctgrind/ctg_*
+experiments/cpp/ctgrind/logs/
+experiments/cpp/ctgrind/ctgrind_results.csv
+data/raw/ctgrind/logs/
+spp/primes_*.txt
+primes_*.txt

@@ -1,0 +1,32 @@
+name: build-and-check
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: sudo apt-get update && sudo apt-get install -y g++ clang make libgmp-dev libssl-dev valgrind python3-numpy python3-matplotlib python3-pandas python3-scipy
+      - name: Library and unit tests
+        run: cd spp && make && make test
+      - name: Experiment programs
+        run: cd experiments/cpp && make
+      - name: Provable generator at odd bit lengths (subset)
+        run: cd experiments/cpp && ./review_exp provodd 100 33 35 47 65 129 255 511 1023 1025 > /dev/null
+      - name: Derived quantities, replications, and figures of the paper
+        run: |
+          python3 analysis/derive_paper_numbers.py
+          python3 analysis/replication_analysis.py
+          python3 analysis/ctgrind_summary.py
+          python3 figures/make_figures.py
+  ctgrind:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Dependencies
+        run: sudo apt-get update && sudo apt-get install -y g++ clang make libgmp-dev valgrind python3
+      - name: Compiled-code analysis (about 30 minutes)
+        run: |
+          experiments/cpp/ctgrind/run_ctgrind.sh
+          python3 analysis/ctgrind_summary.py experiments/cpp/ctgrind/logs /tmp/ctgrind_code_locations.csv

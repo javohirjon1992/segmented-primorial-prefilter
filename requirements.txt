@@ -1,0 +1,6 @@
+numpy>=1.22
+matplotlib>=3.5
+pandas>=1.4
+scipy>=1.8
+gmpy2>=2.1   # optional, faster prototype arithmetic
+jupyter      # optional, for experiments/python/03_bound_theory.ipynb

@@ -1,0 +1,86 @@
+V0–V3 TASDIQLOVCHI TAJRIBA PROTOKOLI: 2048 VA 3072 BIT
+(ma'lumotlar olinishidan OLDIN belgilangan; sana: 2026-11-23; versiya 1.0)
+
+Holati: protokol belgilangan, ma'lumotlar hali olinmagan. Protokoldagi har qanday keyingi o'zgarish sanasi va
+sababi bilan shu faylning oxiridagi "O'zgarishlar" bo'limiga yoziladi; ma'lumotlar olingandan keyin o'zgartirilgan
+bandlar tadqiqot natijasi sifatida emas, razvedka tahlili sifatida bayon qilinadi.
+
+1. MAQSAD
+1024 va 1536 bitdagi tasdiqlovchi tajriba (protokol 2026-11-05) faqat V0 va V3 ni solishtirdi va to'liq
+quvur (pipeline) samarasini o'lchadi. Bu tajriba 2048 va 3072 bitda (a) to'liq quvur samarasini tekshiradi va
+(b) uni ikki qismga ajratadi: OpenSSL ning o'z tanlash usuli ichida prefiltr samarasi (V1 va V2) hamda
+tanlash usulini almashtirish samarasi (V2 va V3).
+
+2. VARIANTLAR (faqat OpenSSL BN arifmetikasi; dastur: ossl_seg.cpp, "confirm4" rejimi)
+  V0  standart BN_generate_prime_ex (OpenSSL ning o'z elagi va raundlari).
+  V1  OpenSSL probable_prime ning aniq nusxasi (elak + inkremental qadam) + BN_is_prime_fasttest_ex.
+  V2  V1 + elak oxiridan B gacha bo'lgan tub sonlar uchun so'z primoriallari prefiltri.
+  V3  har bir nomzodni mustaqil tanlash + 3..B tub sonlari uchun so'z primoriallari prefiltri
+      + o'sha BN_is_prime_fasttest_ex.
+  Barcha variantlarda nomzodlar BN_priv_rand_ex bilan (yuqori ikki bit = 1, toq) olinadi; Miller–Rabin
+  raundlari soni OpenSSL tomonidan bit uzunligidan aniqlanadi va barcha variantlarda bir xil.
+
+3. PARAMETRLAR (oldindan belgilangan)
+  Bit uzunliklari: 2048 va 3072.
+  Prefiltr chegarasi B: 2048 bitda 3·10^4, 3072 bitda 6·10^4. Asos: 1024 bitdagi razvedka tajribasida
+  B = 10^4 eng yaxshi bo'ldi (3·10^4 sekinroq); B log B ~ c_MR/kappa qoidasi va c_MR ~ b^2.6, kappa ~ b
+  masshtabi bo'yicha B ~ b^1.6 deb olindi: 10^4·2^1.6 ~ 3·10^4 va 10^4·3^1.6 ~ 6·10^4.
+  OpenSSL elagi: 2048 bitda 384 ta tub son (p <= 2657), 3072 bitda 1024 ta tub son (p <= 8161).
+  Platformalar: (1) server, OpenSSL 3.0.13, GCC 13.3; (2) noutbuk, OpenSSL 3.6.4, GCC 16.2.
+  Holatlar: 2 platforma x 2 bit uzunligi = 4 holat.
+
+4. HAJM VA QUVVAT
+  Har bir holatda har bir variant uchun n = 2000 ta tub son (jami 4 x 4 x 2000 = 32 000).
+  1024/1536 bitdagi ma'lumotlarda generatsiya vaqtining variatsiya koeffitsiyenti CV = 0,48–0,64.
+  CV = 0,64 da bir bit uzunligi bo'yicha ikki platforma birlashtirilganda log R ning standart xatosi
+  0,0143; 80 % quvvat bilan aniqlanadigan eng kichik farq Holm tuzatishining eng qattiq qadamida
+  (alfa = 0,05/6) 5,1 %, eng yumshoq qadamida (alfa = 0,05) 4,1 %. 1536 bitda kuzatilgan to'liq quvur
+  samarasi 6–11 % edi. Taxminiy davomiyligi: 2048 bitda bir platformada ~45 daqiqa, 3072 bitda ~3 soat.
+  Oraliq tahlil va erta to'xtatish yo'q.
+
+5. O'TKAZISH TARTIBI
+  Har bir blok to'rt variantdan bittadan tub son hosil qiladi; blok ichidagi tartib 4x4 Williams lotin
+  kvadratining (k mod 4)-qatori: (V0 V1 V3 V2), (V1 V2 V0 V3), (V2 V3 V1 V0), (V3 V0 V2 V1). Shunda har bir
+  variant har bir o'rinda teng marta keladi va har bir ketma-ket juftlik bir marta uchraydi.
+  Boshida 20 ta blok qizdirish uchun bajariladi va yozilmaydi.
+  Buyruq:  ./ossl_seg 2048 2000 30000 confirm4 20 > conf4_<platforma>_2048.csv
+           ./ossl_seg 3072 2000 60000 confirm4 20 > conf4_<platforma>_3072.csv
+  Jarayon bitta yadroga biriktiriladi (taskset -c 2), protsessor chastotasi boshqaruvchisi "performance",
+  boshqa og'ir jarayonlar to'xtatiladi; platforma parametrlari platform_info skripti bilan yoziladi.
+  Hech bir kuzatuv chiqarib tashlanmaydi; dastur xato bilan to'xtasa, holat boshidan qayta o'tkaziladi va
+  bu qayd etiladi.
+
+6. ASOSIY MEZONLAR (6 ta gipoteza, Holm usuli, oilaviy alfa = 0,05, ikki tomonlama)
+  Har bir bit uzunligi uchun (2048, 3072) uchta nisbat R = o'rtacha vaqt(A) / o'rtacha vaqt(B):
+    H1  to'liq quvur:          V0 / V3
+    H2  prefiltr samarasi:     V1 / V2   (bir xil tanlash usuli ichida)
+    H3  tanlash usuli samarasi: V2 / V3   (bir xil prefiltr bilan)
+  Har bir holatda log R va uning standart xatosi delta usuli bilan hisoblanadi:
+  Var(log R) = s_A^2/(n_A·m_A^2) + s_B^2/(n_B·m_B^2). Bir bit uzunligidagi ikki platforma teskari
+  dispersiya og'irliklari bilan birlashtiriladi (fixed effect), z-test. Agar I^2 > 50 % bo'lsa, birlashtirilgan
+  qiymat bayon qilinadi, lekin talqin platformalar bo'yicha alohida beriladi. 1024/1536 bitdagi tajribadan
+  farqli ravishda bit uzunliklari birlashtirilmaydi, chunki u yerda samara bit uzunligiga bog'liq bo'lgan.
+
+7. IKKILAMCHI TAHLILLAR
+  (a) Har bir holat va nisbat uchun Welch t-testi va 10 000 takrorli butstrep 95 % ishonch oralig'i.
+  (b) DerSimonian–Laird tasodifiy samaralar modeli (sezgirlik tahlili).
+  (c) V1 replikasining to'g'riligi: V0 va V1 ekvivalentligi TOST bilan, chegara ±5 %, alfa = 0,05
+      (90 % ishonch oralig'i 0,952–1,050 ichida bo'lishi kerak). Ekvivalentlik ko'rsatilmasa, H2 natijasi
+      OpenSSL ga emas, faqat V1 nusxasiga tegishli deb bayon qilinadi.
+  (d) Bir tub songa to'g'ri keladigan Miller–Rabin chaqiruvlari soni (tavsifiy).
+  (e) Model bilan solishtirish: (6) formula bo'yicha bashorat qilingan va o'lchangan V1/V2 nisbati.
+
+8. TALQIN QOIDALARI
+  Natija qanday chiqishidan qat'i nazar, maqola va dissertatsiyaga shu protokol bo'yicha yoziladi.
+  Rad etilmagan gipoteza ekvivalentlik sifatida talqin qilinmaydi. Natijalar sinalgan platformalar,
+  OpenSSL versiyalari va bit uzunliklaridan tashqariga umumlashtirilmaydi.
+
+9. TAHLIL DASTURI
+  confirm4_analysis.py (shu protokol bilan bir vaqtda yozilgan; faqat standart Python kutubxonasi):
+     python3 confirm4_analysis.py conf4_server_2048.csv conf4_server_3072.csv conf4_noutbuk_2048.csv conf4_noutbuk_3072.csv
+  Skript faqat sun'iy (simulyatsiya qilingan) ma'lumotlarda ishlashi tekshirilgan; haqiqiy ma'lumotlar yo'q.
+  ossl_seg "confirm4" rejimi 2048 va 3072 bitda bitta blok bilan sinab ko'rilgan (ishga tushishini
+  tekshirish uchun; natija sifatida ishlatilmaydi).
+
+O'zgarishlar:
+  (hozircha yo'q)

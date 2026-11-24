@@ -1,0 +1,12 @@
+TASDIQLOVCHI TAJRIBA PROTOKOLI (ma'lumotlar olinishidan oldin belgilangan, 2026-11-05)
+
+Gipoteza: OpenSSL arifmetikasida mustaqil tanlash + so'z primoriallari prefiltri (V3, B = 10000)
+tub son generatsiyasining o'rtacha vaqti bo'yicha standart BN_generate_prime_ex (V0) dan farq qiladi.
+
+Variantlar: faqat V0 va V3 (B = 10000). Boshqa variantlar va chegaralar ishlatilmaydi.
+Holatlar: 2 platforma (server: OpenSSL 3.0.13; noutbuk: OpenSSL 3.6.4) x 2 bit uzunligi (1024, 1536).
+Hajm: har bir holatda har bir variant uchun 1000 ta tub son; V0 va V3 navbatma-navbat (ABBA tartibida).
+Asosiy mezon: to'rt holat bo'yicha birlashtirilgan nisbat R = mean(V0)/mean(V3),
+  log R uchun teskari dispersiya og'irliklari (fixed effect), ikki tomonlama test, alfa = 0,05.
+Qo'shimcha: har bir holat uchun Welch t-testi va 10000 takrorli butstrep 95 % ishonch oralig'i.
+Natija qanday chiqishidan qat'i nazar, dissertatsiyaga shu protokol bo'yicha yoziladi.

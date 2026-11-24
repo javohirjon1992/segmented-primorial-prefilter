@@ -1,0 +1,81 @@
+PROTOCOL OF THE CONFIRMATORY V0–V3 EXPERIMENT AT 2048 AND 3072 BITS
+(fixed BEFORE data collection; date: 2026-11-23; version 1.0)
+
+Status: protocol fixed, no data collected. Any later change is recorded with date and reason under
+"Amendments" at the end of this file; items changed after data collection are reported as exploratory.
+
+1. AIM
+The confirmatory experiment at 1024 and 1536 bits (protocol of 2026-11-05) compared only V0 and V3 and
+therefore measured the effect of the complete pipeline. This experiment (a) tests the complete pipeline at
+2048 and 3072 bits and (b) separates it into the effect of the prefilter within OpenSSL's own sampling
+(V1 versus V2) and the effect of replacing the sampling method (V2 versus V3).
+
+2. VARIANTS (OpenSSL BN arithmetic only; program ossl_seg.cpp, mode "confirm4")
+  V0  stock BN_generate_prime_ex.
+  V1  exact replica of OpenSSL's probable_prime (sieve + incremental step) + BN_is_prime_fasttest_ex.
+  V2  V1 + word-primorial prefilter for the primes between the end of OpenSSL's sieve and B.
+  V3  independent sampling of every candidate + word-primorial prefilter for all odd primes up to B
+      + the same BN_is_prime_fasttest_ex.
+  Candidates come from BN_priv_rand_ex (top two bits set, odd); the number of Miller–Rabin rounds is
+  chosen by OpenSSL from the bit length and is identical in all variants.
+
+3. PARAMETERS (pre-specified)
+  Bit lengths: 2048 and 3072.
+  Sieving bound B: 3·10^4 at 2048 bits and 6·10^4 at 3072 bits. Rationale: B = 10^4 was best at 1024 bits
+  in exploratory runs (3·10^4 was slower); with B log B ~ c_MR/kappa, c_MR ~ b^2.6 and kappa ~ b, B ~ b^1.6:
+  10^4·2^1.6 ~ 3·10^4 and 10^4·3^1.6 ~ 6·10^4.
+  OpenSSL sieve: 384 primes (p <= 2657) at 2048 bits, 1024 primes (p <= 8161) at 3072 bits.
+  Platforms: (1) server, OpenSSL 3.0.13, GCC 13.3; (2) laptop, OpenSSL 3.6.4, GCC 16.2. Four settings.
+
+4. SAMPLE SIZE AND POWER
+  n = 2000 primes per variant and setting (32 000 primes in total). In the 1024/1536-bit data, the
+  coefficient of variation of the generation time was 0.48–0.64. With CV = 0.64 and the two platforms of one
+  bit length pooled, the standard error of log R is 0.0143; the smallest difference detected with 80% power
+  is 5.1% at the strictest Holm step (alpha = 0.05/6) and 4.1% at the last step (alpha = 0.05). The effect of
+  the complete pipeline observed at 1536 bits was 6–11%. Expected duration per platform: about 45 minutes at
+  2048 bits and about 3 hours at 3072 bits. No interim analysis, no early stopping.
+
+5. PROCEDURE
+  Each block generates one prime with each variant, in the order given by row (k mod 4) of a 4x4 Williams
+  Latin square: (V0 V1 V3 V2), (V1 V2 V0 V3), (V2 V3 V1 V0), (V3 V0 V2 V1); every variant occupies every
+  position equally often and every ordered pair of consecutive variants occurs once. 20 warm-up blocks are
+  run first and not recorded.
+  Commands: ./ossl_seg 2048 2000 30000 confirm4 20 > conf4_<platform>_2048.csv
+            ./ossl_seg 3072 2000 60000 confirm4 20 > conf4_<platform>_3072.csv
+  The process is pinned to one core (taskset), the frequency governor is set to "performance", other heavy
+  processes are stopped, and the platform parameters are recorded with the platform_info script. No
+  observation is excluded; if the program aborts, the setting is rerun from the start and this is reported.
+
+6. PRIMARY ENDPOINTS (six hypotheses, Holm procedure, familywise alpha = 0.05, two-sided)
+  For each bit length (2048, 3072), three ratios of mean generation times R = mean(A)/mean(B):
+    H1  complete pipeline:  V0 / V3
+    H2  prefilter effect:   V1 / V2   (same sampling method)
+    H3  sampling effect:    V2 / V3   (same prefilter)
+  In each setting, log R and its standard error are obtained by the delta method,
+  Var(log R) = s_A^2/(n_A m_A^2) + s_B^2/(n_B m_B^2); the two platforms of one bit length are pooled with
+  fixed-effect inverse-variance weights and tested with a z-test. If I^2 > 50%, the pooled value is reported
+  but interpreted per platform. Unlike the 1024/1536-bit experiment, bit lengths are not pooled, because
+  the effect depended on the bit length there.
+
+7. SECONDARY ANALYSES
+  (a) Welch's t-test and a bootstrap 95% confidence interval (10 000 resamples) for each setting and ratio.
+  (b) DerSimonian–Laird random-effects model (sensitivity analysis).
+  (c) Validity of the replica: equivalence of V0 and V1 by TOST with margin ±5%, alpha = 0.05 (the 90%
+      confidence interval must lie within 0.952–1.050). If equivalence is not shown, H2 is reported as a
+      property of the replica, not of OpenSSL.
+  (d) Miller–Rabin calls per prime (descriptive).
+  (e) Comparison of the measured V1/V2 ratio with the prediction of the cost model.
+
+8. INTERPRETATION
+  Whatever the outcome, the results are reported according to this protocol. A non-rejected hypothesis is
+  not interpreted as equivalence. Results are not generalized beyond the tested platforms, OpenSSL versions,
+  and bit lengths.
+
+9. ANALYSIS CODE
+  confirm4_analysis.py (written together with this protocol; Python standard library only):
+     python3 confirm4_analysis.py conf4_server_2048.csv conf4_server_3072.csv conf4_laptop_2048.csv conf4_laptop_3072.csv
+  The script has been run only on simulated data. Mode "confirm4" of ossl_seg was smoke-tested with one block
+  at 2048 and 3072 bits; these runs are not data of the experiment.
+
+Amendments:
+  (none)

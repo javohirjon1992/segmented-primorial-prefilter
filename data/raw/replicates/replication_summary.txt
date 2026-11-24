@@ -1,0 +1,40 @@
+[provodd] 22860 primes, 18 bit lengths: [33, 35, 39, 47, 63, 65, 97, 127, 129, 193, 255, 385, 511, 769, 1023, 1025, 1279, 1535]
+  GMP mpz_probab_prime_p: all confirmed = True; 2 (definitely prime) = 5080, 1 (probably prime) = 17780
+  recursion levels 76200; levels with q^2 < p (condition q > sqrt(p) violated) 15260 (20.0 %)
+  33 bits: n=1270, mean 0.01 ms, levels 1, share of levels with q^2<p 0.220
+  35 bits: n=1270, mean 0.01 ms, levels 1, share of levels with q^2<p 0.205
+  39 bits: n=1270, mean 0.01 ms, levels 1, share of levels with q^2<p 0.236
+  47 bits: n=1270, mean 0.01 ms, levels 1, share of levels with q^2<p 0.217
+  63 bits: n=1270, mean 0.10 ms, levels 1, share of levels with q^2<p 0.222
+  65 bits: n=1270, mean 0.02 ms, levels 2, share of levels with q^2<p 0.240
+  97 bits: n=1270, mean 0.04 ms, levels 2, share of levels with q^2<p 0.225
+  127 bits: n=1270, mean 0.05 ms, levels 3, share of levels with q^2<p 0.145
+  129 bits: n=1270, mean 0.07 ms, levels 3, share of levels with q^2<p 0.221
+  193 bits: n=1270, mean 0.15 ms, levels 3, share of levels with q^2<p 0.219
+  255 bits: n=1270, mean 0.28 ms, levels 4, share of levels with q^2<p 0.165
+  385 bits: n=1270, mean 0.89 ms, levels 4, share of levels with q^2<p 0.220
+  511 bits: n=1270, mean 1.63 ms, levels 5, share of levels with q^2<p 0.180
+  769 bits: n=1270, mean 6.96 ms, levels 5, share of levels with q^2<p 0.216
+  1023 bits: n=1270, mean 14.38 ms, levels 6, share of levels with q^2<p 0.187
+  1025 bits: n=1270, mean 21.69 ms, levels 6, share of levels with q^2<p 0.222
+  1279 bits: n=1270, mean 37.53 ms, levels 6, share of levels with q^2<p 0.188
+  1535 bits: n=1270, mean 116.89 ms, levels 6, share of levels with q^2<p 0.188
+[genrep 1280] 200 seeds: reduction of Miller-Rabin calls by GEOM relative to TD(1000) 39.4 % (95 % bootstrap 38.6-40.2 %)
+  Miller-Rabin calls on composites 101581 (of which in the MR-only baseline 81262); rounds beyond the first 0
+  mean candidates per prime 407.3; mean Miller-Rabin calls GEOM/TD/MR 39.1 / 64.5 / 407.3
+[genrep 2560] 60 seeds: reduction of Miller-Rabin calls by GEOM relative to TD(1000) 44.9 % (95 % bootstrap 43.8-46.2 %)
+  Miller-Rabin calls on composites 65509 (of which in the MR-only baseline 52214); rounds beyond the first 0
+  mean candidates per prime 871.2; mean Miller-Rabin calls GEOM/TD/MR 79.5 / 144.1 / 871.2
+[saferep 768] 40 seeds: ratio of modular exponentiations td_pair/geom_product 2.630 (95 % bootstrap 2.595-2.655)
+  mean candidates per safe prime 111,927 (81,924-144,473); Hardy-Littlewood estimate 107,036
+[saferep 1280] 40 seeds: ratio of modular exponentiations td_pair/geom_product 2.694 (95 % bootstrap 2.673-2.712)
+  mean candidates per safe prime 255,375 (193,313-323,617); Hardy-Littlewood estimate 297,633
+[complete generators] mean time per prime +- standard error (ms); timings are platform dependent
+  1024 bits: prob_1024_tdlp 28.6+-3.3 (n=60), prob_1024_t64 59.9+-3.3 (n=60), prov_1024_geom 24.9+-2.7 (n=60), prov_1024_td 27.3+-3.3 (n=60)
+    t from Table 2 vs t = 64: 2.09x; provable vs 64 rounds: 2.41x; segmented vs TD within provable: 1.10x
+  1536 bits: prob_1536_tdlp 91.6+-11.9 (n=40), prob_1536_t64 192.5+-11.9 (n=40), prov_1536_geom 120.6+-15.6 (n=40), prov_1536_td 158.1+-19.7 (n=40)
+    t from Table 2 vs t = 64: 2.10x; provable vs 64 rounds: 1.60x; segmented vs TD within provable: 1.31x
+  2048 bits: prob_2048_tdlp 80.6+-11.6 (n=20), prob_2048_t64 197.2+-11.6 (n=20), prov_2048_geom 250.8+-44.2 (n=20), prov_2048_td 301.6+-63.5 (n=20)
+    t from Table 2 vs t = 64: 2.45x; provable vs 64 rounds: 0.79x; segmented vs TD within provable: 1.20x
+  RSA-2048: 30 pairs, t = 6, mean 26.1 ms, regenerations of q: 0, top bits ok: True
+  RSA-3072: 10 pairs, t = 4, mean 126.2 ms, regenerations of q: 0, top bits ok: True

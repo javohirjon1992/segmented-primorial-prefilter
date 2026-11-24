@@ -1,0 +1,33 @@
+Protocol of the confirmatory OpenSSL experiment
+
+The protocol below was fixed in writing on 2026-11-05, before the confirmatory data were
+collected. The original text is in Uzbek (confirmatory_protocol_UZ.txt); this is a faithful English
+translation.
+
+----------------------------------------------------------------------------------------
+CONFIRMATORY EXPERIMENT PROTOCOL (fixed before data collection, 2026-11-05)
+
+Hypothesis: In OpenSSL arithmetic, independent sampling with a word-primorial prefilter
+(V3, B = 10000) differs from the standard BN_generate_prime_ex (V0) in the mean time of
+prime generation.
+
+Variants: only V0 and V3 (B = 10000). No other variants or bounds are used.
+
+Settings: 2 platforms (server: OpenSSL 3.0.13; laptop: OpenSSL 3.6.4) x 2 bit lengths
+(1024, 1536).
+
+Sample size: 1000 primes for each variant in each setting; V0 and V3 alternate (ABBA order).
+
+Primary endpoint: the ratio R = mean(V0)/mean(V3) pooled over the four settings, with
+inverse-variance weights for log R (fixed effect), two-sided test, alpha = 0.05.
+
+Secondary analyses: Welch t-test for each setting and a 95% bootstrap confidence interval
+with 10000 resamples.
+
+Regardless of the outcome, the results will be reported in the dissertation according to
+this protocol.
+----------------------------------------------------------------------------------------
+
+Implementation: experiments/cpp/ossl_seg.cpp (command `ossl_seg <bits> 1000 10000 confirm`,
+step 14 of experiments/cpp/run_all.sh); analysis: analysis/confirmatory_analysis.py; aggregated
+results: data/tables/openssl_confirmatory.csv.
